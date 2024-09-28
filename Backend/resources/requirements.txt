@@ -1,5 +1,6 @@
 fastapi[standard]
 typing
 tinydb
+SQLAlchemy
 
 resources/PyDriller_Cedric_Version-2.6-py3-none-any.whl
