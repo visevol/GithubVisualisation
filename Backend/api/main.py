@@ -3,10 +3,10 @@ from fastapi import FastAPI
 from api.routers.commits_router import commits_router
 from fastapi.middleware.cors import CORSMiddleware
 
+
 ### LOGGING ###
 logging.basicConfig(format=' >>>>>>>>>>>> %(message)s', level=logging.ERROR)
 logger = logging.getLogger(__name__)
-
 
 
 app = FastAPI()
@@ -25,3 +25,8 @@ app.add_middleware(
 ### STARTING UP ###
 logger.info('API is starting up')
 app.include_router(commits_router)
+
+
+@app.get("/repository")
+def get_repository(url: str):
+    print(f"fetching {url} ...")
