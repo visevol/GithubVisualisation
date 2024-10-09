@@ -10,13 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_10_07_003949) do
+ActiveRecord::Schema[8.0].define(version: 2024_10_09_002833) do
   create_table "commit_file_changes", force: :cascade do |t|
-    t.integer "commit_id"
+    t.integer "repository_id"
+    t.string "commit_hash"
     t.string "filepath"
     t.integer "additions", default: 0
     t.integer "deletions", default: 0
-    t.index ["commit_id"], name: "index_commit_file_changes_on_commit_id"
+    t.index ["repository_id", "commit_hash"], name: "index_commit_file_changes_on_repository_id_and_commit_hash"
   end
 
   create_table "commits", force: :cascade do |t|
