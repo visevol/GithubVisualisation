@@ -5,7 +5,8 @@
 # below each fixture, per the syntax in the comments below
 #
 rails_4ad93b_Gemfile:
-  commit: rails_4ad93b
+  repository: rails
+  commit_hash: 4ad93b56ae27582947c9e37f15f1fc54ea263e26
   filepath: Gemfile
   additions: 1
   deletions: 1

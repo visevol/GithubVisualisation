@@ -7,7 +7,9 @@ class RepositorySyncService
     git_repo = GitRepository.new(@repository.remote_url)
     git_repo.clone
     git_repo.logs(format: "||%H||%aN||%cs||%as||") do |logs|
-      commit_id = nil
+      commit_hash = nil
+      commits = []
+      changes = []
 
       logs.each do |line|
         line.force_encoding("utf-8")
@@ -15,11 +17,25 @@ class RepositorySyncService
         next if line == ""
 
         if line[0] == "|"
-          result = Commit.insert(commit_data_from_line(line))
-          commit_id = result.first["id"]
+          if commits.size > 500
+            Commit.insert_all(commits)
+            CommitFileChange.insert_all(changes)
+
+            commits = []
+            changes = []
+          end
+
+          data = commit_data_from_line(line)
+          commits << data
+          commit_hash = data[:commit_hash]
         elsif Integer(line[0], exception: false)
-          CommitFileChange.insert(commit_file_change_data_from_line(line, commit_id))
+          changes << commit_file_change_data_from_line(line, commit_hash)
         end
+      end
+
+      unless commits.empty?
+        Commit.insert_all(commits)
+        CommitFileChange.insert_all(changes)
       end
     end
   end
@@ -37,10 +53,11 @@ class RepositorySyncService
     }
   end
 
-  def commit_file_change_data_from_line(line, commit_id)
+  def commit_file_change_data_from_line(line, commit_hash)
     additions, deletions, filepath = line.split("\t", 3)
     {
-      commit_id: commit_id,
+      repository_id: @repository.id,
+      commit_hash: commit_hash,
       filepath: filepath.strip,
       additions: additions,
       deletions: deletions
