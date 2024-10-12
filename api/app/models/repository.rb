@@ -1,5 +1,6 @@
 class Repository < ApplicationRecord
   has_many :commits
+  has_many :files, class_name: "RepositoryFile"
 
   validates :path, uniqueness: {
     scope: :domain,
