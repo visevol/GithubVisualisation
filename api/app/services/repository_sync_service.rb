@@ -3,14 +3,22 @@ class RepositorySyncService
 
   def initialize(repository)
     @repository = repository
+    @git_repo = GitRepository.new(@repository.remote_url)
     @commits = []
     @files = {}
   end
 
   def index
-    git_repo = GitRepository.new(@repository.remote_url)
-    git_repo.clone
-    git_repo.logs(format: "||%H||%aN||%cs||%as||") do |logs|
+    @git_repo.clone
+
+    extract_commit_history
+    extract_commit_history_for_file_sizes
+  end
+
+  private
+
+  def extract_commit_history
+    @git_repo.logs(format: "||%H||%aN||%cs||%as||") do |logs|
       current_commit_hash = nil
 
       logs.each do |line|
@@ -36,10 +44,42 @@ class RepositorySyncService
     end
   end
 
-  private
+  def extract_commit_history_for_file_sizes
+    @git_repo.logs(with_first_parent: true, format: "||%H||%aN||%cs||%as||") do |logs|
+      current_commit_hash = nil
 
-  def persist_current_batch
-    Commit.insert_all(@commits)
+      logs.each do |line|
+        line.force_encoding("utf-8")
+
+        next if line == ""
+
+        if line[0] == "|"
+          persist_current_batch(for_file_size: true) if @commits.size >= COMMIT_BATCH_SIZE
+
+          commit = commit_data_from_line(line)
+          commit[:for_file_size] = true
+          current_commit_hash = commit[:commit_hash]
+          @commits << commit
+        elsif Integer(line[0], exception: false)
+          change = commit_file_change_data_from_line(line, current_commit_hash)
+          filepath = change.delete(:filepath)
+
+          (@files[filepath] ||= []) << change
+        end
+      end
+
+      persist_current_batch(for_file_size: true)
+    end
+  end
+
+  def persist_current_batch(for_file_size: false)
+    if for_file_size
+      Commit
+        .where(commit_hash: @commits.map { _1[:commit_hash] })
+        .update_all(for_file_size: true)
+    else
+      Commit.insert_all(@commits)
+    end
     SourceFile.insert_all(@files.keys.map { |filepath| source_file_attribute(filepath) })
 
     commits_by_hash = Commit

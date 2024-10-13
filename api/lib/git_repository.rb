@@ -39,13 +39,21 @@ class GitRepository
   #         This is passed directly to the `--pretty=format:"#{format}"` option
   #         See `man git log` for documentation about available formats.
   #
-  def logs(since: nil, before: nil, format: nil)
+  def logs(
+    with_first_parent: false,
+    since: nil,
+    before: nil,
+    format: nil
+  )
     return unless block_given?
 
     command = [ "log" ]
     command << "--reverse"
     command << "--numstat"
     command << "--summary"
+    command << "--no-renames"
+    command << "-m" if with_first_parent
+    command << "--first-parent" if with_first_parent
     command << "--since=#{since.strftime("%Y-%m-%d")}" if since
     command << "--until=#{before.strftime("%Y-%m-%d")}" if before
     command << "--pretty=format:#{format}" if format
