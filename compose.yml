@@ -7,13 +7,10 @@ services:
       - ./api:/rails/
     ports:
       - "3000:3000"
-  backend:
-    build: ./Backend/.
+  jobs:
+    command: ["./bin/jobs"]
+    build:
+      context: ./api
+      dockerfile: Dockerfile.dev
     volumes:
-      - ./Backend:/code
-    ports:
-      - "80:80"
-  frontend:
-    build: ./Frontend/.
-    ports:
-      - "8080:8080"
+      - ./api:/rails/
