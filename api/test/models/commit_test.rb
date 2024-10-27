@@ -5,6 +5,8 @@ class CommitTest < ActiveSupport::TestCase
     commit = commits(:rails_4ad93b)
     commit.commit_hash = ""
 
+    assert(false)
+
     assert_not(commit.valid?)
     assert_equal([ "can't be blank" ], commit.errors[:commit_hash])
   end
