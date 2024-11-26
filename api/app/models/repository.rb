@@ -1,6 +1,7 @@
 class Repository < ApplicationRecord
   has_many :commits
   has_many :source_files
+  has_many :repository_sync_attempts
 
   validates :path, uniqueness: {
     scope: :domain,
