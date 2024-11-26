@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_11_20_051124) do
+ActiveRecord::Schema[8.0].define(version: 2024_11_26_051852) do
   create_table "commits", force: :cascade do |t|
     t.integer "repository_id"
     t.string "commit_hash"
@@ -33,11 +33,19 @@ ActiveRecord::Schema[8.0].define(version: 2024_11_20_051124) do
     t.index ["domain", "path"], name: "index_repositories_on_domain_and_path", unique: true
   end
 
+  create_table "repository_sync_attempts", force: :cascade do |t|
+    t.integer "repository_id"
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["repository_id"], name: "index_repository_sync_attempts_on_repository_id"
+  end
+
   create_table "source_file_changes", force: :cascade do |t|
     t.integer "commit_id"
-    t.integer "source_file_id"
     t.integer "additions", default: 0
     t.integer "deletions", default: 0
+    t.integer "source_file_id"
     t.string "category"
     t.index ["commit_id"], name: "index_source_file_changes_on_commit_id"
     t.index ["source_file_id", "commit_id"], name: "index_source_file_changes_on_source_file_id_and_commit_id", unique: true
