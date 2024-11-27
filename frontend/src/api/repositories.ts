@@ -21,8 +21,9 @@ export async function searchRepositoryByUrl(url: string): Promise<RepositorySear
       domain: response.data.repository.domain,
       path: response.data.repository.path,
       url: response.data.repository.url,
-      createdAt: response.data.repository.created_at,
+      createdAt: new Date(response.data.repository.created_at),
       updatedAt: response.data.repository.updated_at,
+      lastSyncedAt: response.data.repository.last_synced_at ? new Date(response.data.repository.last_synced_at) : null,
     }
   }
 
@@ -37,4 +38,22 @@ export async function searchRepositoryByUrl(url: string): Promise<RepositorySear
   }
 
   return result
+}
+
+export async function searchOrCreateRepository(url: string): Promise<Repository | null> {
+  const response = await axios.post('/repositories', {url: url});
+  if (response.status >= 400) {
+    return null;
+  }
+
+  return {
+    id: response.data.id,
+    name: response.data.name,
+    domain: response.data.domain,
+    path: response.data.path,
+    url: response.data.url,
+    createdAt: new Date(response.data.created_at),
+    updatedAt: new Date(response.data.updated_at),
+    lastSyncedAt: response.data.last_synced_at ? new Date(response.data.last_synced_at) : null,
+  }
 }

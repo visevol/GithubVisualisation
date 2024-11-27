@@ -3,24 +3,19 @@ import "assets/styles/addRepository.scss";
 import { Input } from "antd";
 import { useNavigate } from "react-router-dom";
 
-import { searchRepositoryByUrl } from "api";
+import { searchOrCreateRepository } from "api";
 
 const AddRepository: React.FC = () => {
   const [url, setUrl] = useState<string>("");
   const navigate = useNavigate();
 
   const handleEnterPress = async () => {
-    const result = await searchRepositoryByUrl(url);
+    const repository = await searchOrCreateRepository(url);
 
-    if (result.repository) {
-      return navigate(`/repository/${result.repository.id}/change-volume`);
-    }
-
-    if (result.remoteRepository) {
-      console.log(result.remoteRepository)
-      alert(`repository: ${result.remoteRepository.url} exists, but not yet analyzed.`)
+    if (repository == null) {
+      alert(`The repository does not exists. Make sure the url points to a public repository on Github.`)
     } else {
-      alert(`repository: ${url} does not exists.`)
+      navigate(`/repository/${repository.id}/change-volume`);
     }
   };
 

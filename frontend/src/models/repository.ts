@@ -6,4 +6,5 @@ export default interface Repository {
   url: string;
   createdAt: Date;
   updatedAt: Date;
+  lastSyncedAt: Date | null;
 }
