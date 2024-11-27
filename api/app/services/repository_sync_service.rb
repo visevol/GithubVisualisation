@@ -6,8 +6,12 @@ class RepositorySyncService
   def index
     gitland_repository = Gitland::Repository.new(@repository)
 
-    extract_full_commit_history(gitland_repository)
-    extract_commit_history_for_changes_ledger(gitland_repository)
+    @repository.transaction do
+      extract_full_commit_history(gitland_repository)
+      extract_commit_history_for_changes_ledger(gitland_repository)
+
+      @repository.update!(last_synced_at: DateTime.current)
+    end
   end
 
   private

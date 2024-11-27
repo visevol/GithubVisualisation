@@ -316,6 +316,16 @@ class RepositorySyncServiceTest < ActiveSupport::TestCase
     assert_equal("create", space_file_b.source_file_changes.first.category)
   end
 
+  test "#index sets the last_synced_at column on the repository once it completes" do
+    freeze_time do
+      assert_nil(@repository.last_synced_at)
+
+      RepositorySyncService.new(@repository).index
+
+      assert_equal(DateTime.current, @repository.last_synced_at)
+    end
+  end
+
   private
 
   def stub_git_commit_history(&block)
