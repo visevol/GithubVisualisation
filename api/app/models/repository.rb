@@ -43,7 +43,8 @@ class Repository < ApplicationRecord
       path: path,
       url: remote_url,
       created_at: created_at,
-      updated_at: updated_at
+      updated_at: updated_at,
+      last_synced_at: last_synced_at
     }
   end
 

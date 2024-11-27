@@ -14,9 +14,19 @@ class RepositoriesControllerTest < ActionDispatch::IntegrationTest
     get "/repositories/#{repository.id}"
 
     assert_response(:ok)
-    assert_equal("rails", response.parsed_body[:name])
-    assert_equal("github.com", response.parsed_body[:domain])
-    assert_equal("/rails/rails", response.parsed_body[:path])
+    assert_equal(
+      {
+        "id" => repository.id,
+        "name" => "rails",
+        "domain" => "github.com",
+        "path" => "/rails/rails",
+        "url" => "https://github.com/rails/rails",
+        "created_at" => repository.created_at.as_json,
+        "updated_at" => repository.updated_at.as_json,
+        "last_synced_at" => nil
+      },
+      response.parsed_body
+    )
   end
 
   test "#create returns 200 if the repository already exists" do
@@ -104,7 +114,8 @@ class RepositoriesControllerTest < ActionDispatch::IntegrationTest
             "path" => "/moodle/moodle",
             "url" => "https://github.com/moodle/moodle",
             "created_at" => repository.created_at.as_json,
-            "updated_at" => repository.updated_at.as_json
+            "updated_at" => repository.updated_at.as_json,
+            "last_synced_at" => nil
           },
           "remote_repository" => nil
         },
@@ -134,7 +145,8 @@ class RepositoriesControllerTest < ActionDispatch::IntegrationTest
             "path" => "/moodle/moodle",
             "url" => "https://github.com/moodle/moodle",
             "created_at" => repository.created_at.as_json,
-            "updated_at" => repository.updated_at.as_json
+            "updated_at" => repository.updated_at.as_json,
+            "last_synced_at" => nil
           },
           "remote_repository" => {
             "name" => "moodle",
