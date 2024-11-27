@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_11_20_051124) do
+ActiveRecord::Schema[8.0].define(version: 2024_11_27_042936) do
   create_table "commits", force: :cascade do |t|
     t.integer "repository_id"
     t.string "commit_hash"
@@ -30,6 +30,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_11_20_051124) do
     t.string "path"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "last_synced_at"
     t.index ["domain", "path"], name: "index_repositories_on_domain_and_path", unique: true
   end
 
