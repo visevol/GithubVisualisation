@@ -1,32 +1,24 @@
-# Guide Programmeur
+# Programmer's guide
 
 # Backend
 
 ## Setup (local)
 
-Configurer un environnement virtuel.
-```
-pip install virtual env
-python3 -m virtualenv .venv  
-source .venv/bin/activate
-```
-Installer les requis
-```
-pip install -r resources/requirements.txt
+[Rails backend development setup](../api/README.md)
 
-fastapi run api/main.py
-```
-Query l'API sur localhost:8000
+### Tests & Lint
 
-### Tests
-
-Après avoir fait les étapes ci-haut :
+To run tests :
 ```
-pip install -r resources/requirements_test.txt
-pytest
+cd api/
+bin/rails test
 ```
-Les tests dépendent de ce repo (à changer éventuellement) : https://github.com/cedric-audy/test_repo_pfe
 
+To run lint and autocorrect :
+```
+cd api/
+bin/rubocop -A
+```
 
 ## Docker
 ```
